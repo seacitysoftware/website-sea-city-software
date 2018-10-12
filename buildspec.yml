@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --no-include-email --region eu-west-1)
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - make package
+      - docker tag website-sea-city-software:latest 013838561484.dkr.ecr.eu-west-1.amazonaws.com/website-sea-city-software:latest
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push 013838561484.dkr.ecr.eu-west-1.amazonaws.com/website-sea-city-software:latest
+      - printf '[{"name":"website-sea-city-software","imageUri":"013838561484.dkr.ecr.eu-west-1.amazonaws.com/website-sea-city-software:latest"}]' > imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json

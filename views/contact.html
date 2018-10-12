@@ -1,0 +1,137 @@
+{{ template "head.html" . }}
+
+{{ template "header.html" . }}
+
+<div class="Contact">
+
+    <div class="contact-form-wrapper">
+        <form class="contact-form" id="contact-form">
+            <h2>Get in touch</h2>
+
+            <div class="form-input">
+                <label for="name">Name</label>
+                <input type="text" name="name" required/>
+            </div>
+
+            <div class="form-input">
+                <label for="email">Email</label>
+                <input type="email" name="email" required/>
+            </div>
+
+            <div class="form-input">
+                <label for="company">Company</label>
+                <input type="text" name="company" required/>
+            </div>
+
+            <div class="form-input">
+                <label for="number">Number</label>
+                <input type="tel" name="number" required/>
+            </div>
+
+            <div class="form-input">
+                <label for="message">Message</label>
+                <textarea name="message" type="text" required></textarea>
+            </div>
+
+            <div id="g-recaptcha"></div>
+
+            <input class="submit-button" type="submit" value="Submit" disabled/>
+
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="submit-success" class="modal">
+        <p class="modal-title">Thanks!</p>
+        <p class="modal-summary">We'll be in touch shortly.</p>
+        <a href="/" class="modal-button">Close</a>
+    </div>
+
+    <!-- Failure Modal -->
+    <div id="submit-failure" class="modal">
+        <p class="modal-title">Unable to submit!</p>
+        <p class="modal-summary">Please ensure you've filled in all the field!</p>
+        <a href="#" rel="modal:close" class="modal-button">Close</a>
+    </div>
+
+</div>
+
+<script>
+
+    var isFormValid = function () {
+        return $('.contact-form')[0].checkValidity();
+    };
+
+    var isRecaptchaValid = false;
+
+    {{/* Configure recaptcha  */}}
+    var recaptchaDataCallback = function (token) {
+        isRecaptchaValid = true;
+        controlSubmitButtonDisplay();
+    };
+    var recaptchaExpiredCallback = function (token) {
+        isRecaptchaValid = false;
+    };
+    var recpatchaOnloadCallback = function () {
+        grecaptcha.render('g-recaptcha', {
+            'sitekey': '6Lfv7GgUAAAAADZTRmDF2WCpA6VPWgSk8shbEJGX',
+            'callback': recaptchaDataCallback,
+            'expired-callback': recaptchaExpiredCallback
+        });
+    };
+
+    function controlSubmitButtonDisplay() {
+        if (isRecaptchaValid && isFormValid()) {
+            $('.submit-button').prop('disabled', false);
+        } else {
+            $('.submit-button').prop('disabled', true);
+        }
+    }
+
+    $(document).ready(function () {
+
+    {{/* Disable default submit on form  */}}
+        $("form#contact-form").submit(function (e) {
+            e.preventDefault();
+            return false;
+        });
+
+        $('form#contact-form').change(function () {
+            controlSubmitButtonDisplay();
+        });
+
+        function showSuccessModal() {
+            console.log("Showing success modal");
+            $('#submit-success').modal()
+        }
+
+        function showFailureModal() {
+            console.log("Showing failure modal");
+            $('#submit-failure').modal()
+        }
+
+    {{/* Configure custom form submit */}}
+        $('.submit-button').click(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: '/contact',
+                type: 'post',
+                dataType: 'json',
+                data: $('form#contact-form').serialize()
+            }).done(showSuccessModal)
+              .fail(showFailureModal);
+
+            return false;
+        });
+    });
+
+</script>
+
+<script src="https://www.google.com/recaptcha/api.js?onload=recpatchaOnloadCallback&render=explicit"
+        async defer>
+</script>
+
+{{ template "footer.html" . }}
+
+{{ template "foot.html" . }}

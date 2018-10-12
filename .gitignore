@@ -1,0 +1,15 @@
+.idea/
+*.iml
+node_modules/
+.sass-cache/
+.DS_Store
+
+# React output directory
+build/
+
+# Go output directory
+bin/
+target/
+vendor/
+
+.clean/
