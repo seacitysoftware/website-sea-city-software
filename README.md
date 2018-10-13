@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/seacitysoftware/website-sea-city-software)](https://goreportcard.com/report/github.com/seacitysoftware/website-sea-city-software)
+
 # Sea City Software Website
 
 
